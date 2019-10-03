@@ -1,5 +1,14 @@
+#include <vector>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+
+#include "../includes_usr/datastructures.h"
 #include "../includes_usr/fileIO.h"
 using namespace std;
+
+constant char SEPARATOR = ',';
 /* clears, then loads books from the file filename
  * returns  COULD_NOT_OPEN_FILE if cannot open filename
  * 			NO_BOOKS_IN_LIBRARY if there are 0 entries in books
@@ -7,6 +16,27 @@ using namespace std;
  * */
 int loadBooks(std::vector<book> &books, const char* filename)
 {
+	books.clear();
+
+	ifstream inputFile;
+	inputFile.open(filename, ios::in);
+	if (!inputFile.is_open()){
+		return COULD_NOT_OPEN_FILE;
+	}
+
+	while(!inputFile.is_open()){
+		string line;
+		getline(inputFile, line);
+
+		stringstream ss(line);
+		string bookInfo;
+		while (getline(ss, bookInfo, SEPARATOR)){
+
+		}
+
+
+	}
+
 	return SUCCESS;
 }
 
