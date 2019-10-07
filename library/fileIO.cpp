@@ -8,7 +8,7 @@
 #include "../includes_usr/fileIO.h"
 using namespace std;
 
-constant char SEPARATOR = ',';
+const char SEPARATOR = ',';
 /* clears, then loads books from the file filename
  * returns  COULD_NOT_OPEN_FILE if cannot open filename
  * 			NO_BOOKS_IN_LIBRARY if there are 0 entries in books
@@ -24,19 +24,40 @@ int loadBooks(std::vector<book> &books, const char* filename)
 		return COULD_NOT_OPEN_FILE;
 	}
 
-	while(!inputFile.is_open()){
-		string line;
-		getline(inputFile, line);
-
+	string line = "";
+	while(getline(inputFile, line)){
+		book newBook;
+		string bookId, title, author, state, patId;
+		int converter = 0;
 		stringstream ss(line);
-		string bookInfo;
-		while (getline(ss, bookInfo, SEPARATOR)){
 
-		}
+		getline(ss, bookId, SEPARATOR);
+		ss >> converter;
+		newBook.book_id = converter;
 
+		getline(ss, title, SEPARATOR);
+		newBook.title = title;
+
+		getline(ss, author, SEPARATOR);
+		newBook.author = author;
+
+		getline(ss, state, SEPARATOR);
+		ss >> converter;
+		newBook.state = static_cast<book_checkout_state>(converter);
+
+		getline(ss, patId, SEPARATOR);
+		ss >> converter;
+		newBook.loaned_to_patron_id = converter;
+
+		books.push_back(newBook);
 
 	}
 
+	if (books.empty()){
+		return NO_BOOKS_IN_LIBRARY;
+	}
+
+	inputFile.close();
 	return SUCCESS;
 }
 
@@ -47,6 +68,23 @@ int loadBooks(std::vector<book> &books, const char* filename)
  * */
 int saveBooks(std::vector<book> &books, const char* filename)
 {
+	/*if (books.empty()){
+		return NO_BOOKS_IN_LIBRARY;
+	}
+
+	ofstream outputFile;
+	outputFile.open(filename);
+
+	if (!outputFile.is_open()){
+		return COULD_NOT_OPEN_FILE;
+	}
+
+	for (int i = 0; i < books.size(); i++){
+		outputFile << books[i].title << " , " << books[i].author <<
+				" , " << books[i].book_id << " , " << books[i].loaned_to_patron_id;
+	}
+
+	outputFile.close();*/
 	return SUCCESS;
 }
 
