@@ -80,11 +80,12 @@ int saveBooks(std::vector<book> &books, const char* filename)
 	}
 
 	for (int i = 0; i < books.size(); i++){
-		outputFile << books[i].title << " , " << books[i].author <<
-				" , " << books[i].book_id << " , " << books[i].loaned_to_patron_id;
+		outputFile << books[i].book_id << books[i].title << " , "
+				<< books[i].author << " , " << books[i].state
+				<< " , " << books[i].loaned_to_patron_id;
 	}
 
-	outputFile.close();*/
+	outputFile.close(); */
 	return SUCCESS;
 }
 
