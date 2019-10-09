@@ -48,14 +48,14 @@ int loadBooks(std::vector<book> &books, const char* filename)
 		sPatId >> converter;
 		newBook.loaned_to_patron_id = converter;
 
-		/*
-		string bookId, title, author, state, patId;
+
+		/*string bookId, title, author, state, patId;
 		stringstream ss(line);
 		getline(ss, bookId, SEPARATOR);
 		ss >> converter;
 		newBook.book_id = converter;
 
-		getline(ss, title, SEPARATOR);
+		getline(ss, newBook.title, SEPARATOR);
 		newBook.title = title;
 
 		getline(ss, author, SEPARATOR);
