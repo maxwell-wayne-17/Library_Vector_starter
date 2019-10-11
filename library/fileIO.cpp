@@ -42,27 +42,6 @@ int loadBooks(std::vector<book> &books, const char* filename)
 		newBook.loaned_to_patron_id = stoi(data[4]);
 		books.push_back(newBook);
 
-
-		/*string bookId, title, author, state, patId;
-		stringstream ss(line);
-		getline(ss, bookId, SEPARATOR);
-		newBook.book_id = stoi(bookId);
-
-		getline(ss, title, SEPARATOR);
-		newBook.title = title;
-
-		getline(ss, author, SEPARATOR);
-		newBook.author = author;
-
-		getline(ss, state, SEPARATOR);
-		newBook.state = static_cast<book_checkout_state>(stoi(state));
-
-		getline(ss, patId, SEPARATOR);
-		newBook.loaned_to_patron_id = stoi(patId);
-
-		books.push_back(newBook);
-		ss.clear();*/
-
 	}
 
 	if (books.empty()){
@@ -130,21 +109,6 @@ int loadPatrons(std::vector<patron> &patrons, const char* filename)
 		newPat.number_books_checked_out = stoi(data[2]);
 
 		patrons.push_back(newPat);
-
-		/*string patId, name, booksOut;
-		stringstream ss(line);
-
-		getline(ss, patId, SEPARATOR);
-		newPat.patron_id = stoi(patId);
-
-		getline(ss, name, SEPARATOR);
-		newPat.name = name;
-
-		getline(ss, booksOut, SEPARATOR);
-		newPat.number_books_checked_out = stoi(booksOut);
-
-		patrons.push_back(newPat);
-		ss.clear(); */
 
 	}
 

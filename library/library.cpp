@@ -50,7 +50,7 @@ void reloadAllData(){
  */
 int checkout(int bookid, int patronid){
 
-	reloadAllData();  //load books and patrons
+	reloadAllData();
 
 	int patIndex = -5;
 	for (int i = 0; i < int(pats.size()); i++){
@@ -60,10 +60,10 @@ int checkout(int bookid, int patronid){
 		}
 	}
 
-	if (patIndex == -5){ //make sure patron is enrolled
+	if (patIndex == -5){
 		return PATRON_NOT_ENROLLED;
 	}
-	if (pats[patIndex].number_books_checked_out == MAX_BOOKS_ALLOWED_OUT){ //see if patron can check out any more books
+	if (pats[patIndex].number_books_checked_out == MAX_BOOKS_ALLOWED_OUT){
 		return TOO_MANY_OUT;
 	}
 
@@ -75,17 +75,17 @@ int checkout(int bookid, int patronid){
 			}
 	}
 
-	if (bookIndex == -5){ //make sure book is in collection
+	if (bookIndex == -5){
 		return BOOK_NOT_IN_COLLECTION;
 	}
 
 
-	books[bookIndex].loaned_to_patron_id = patronid; //set loaned id
-	books[bookIndex].state = OUT; //set checked out
+	books[bookIndex].loaned_to_patron_id = patronid;
+	books[bookIndex].state = OUT;
 
 	pats[patIndex].number_books_checked_out++;
 
-	saveBooks(books, BOOKFILE.c_str()); //save to disk
+	saveBooks(books, BOOKFILE.c_str());
 	savePatrons(pats, PATRONFILE.c_str());
 
 
