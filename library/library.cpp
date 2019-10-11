@@ -7,7 +7,7 @@
 #include "../includes_usr/library.h"
 #include "../includes_usr/datastructures.h"
 #include "../includes_usr/fileIO.h"
-#include "../includes_usr/constants.h"
+//#include "../includes_usr/constants.h"
 using namespace std;
 
 //NOTE: please ensure patron and book data are loaded from disk before calling the following
@@ -21,10 +21,7 @@ vector<patron> pats;
  * clear books and patrons containers
  * then reload them from disk 
  */
-void reloadAllData(){ //does not work
-
-	books.clear();
-	pats.clear();
+void reloadAllData(){
 
 	loadBooks(books, BOOKFILE.c_str());
 	loadPatrons(pats, PATRONFILE.c_str());
@@ -53,28 +50,42 @@ void reloadAllData(){ //does not work
  */
 int checkout(int bookid, int patronid){
 
-	loadBooks(books, BOOKFILE.c_str());
-	loadPatrons(pats, PATRONFILE.c_str());
+	reloadAllData();  //load books and patrons
 
-	bool validPat = false;
-	for (int i = 0; i < int(pats.size()) && !validPat; i++){
+	int patIndex = -5;
+	for (int i = 0; i < int(pats.size()); i++){
 		if (pats[i].patron_id == patronid){
-			validPat = true;
+			patIndex = i;
+			break;
 		}
 	}
 
-	if (!validPat){
+	if (patIndex == -5){ //make sure patron is enrolled
 		return PATRON_NOT_ENROLLED;
 	}
-
-	if (pats[patronid].patron_id == MAX_BOOKS_ALLOWED_OUT){
+	if (pats[patIndex].number_books_checked_out == MAX_BOOKS_ALLOWED_OUT){ //see if patron can check out any more books
 		return TOO_MANY_OUT;
 	}
 
-	books[bookid].loaned_to_patron_id = patronid;
-	books[bookid].state = OUT;
+	int bookIndex = -5;
+	for (int i = 0; i < int(books.size()); i++){
+			if (books[i].book_id == bookid){
+				bookIndex = i;
+				break;
+			}
+	}
 
-	saveBooks(books, BOOKFILE.c_str());
+	if (bookIndex == -5){ //make sure book is in collection
+		return BOOK_NOT_IN_COLLECTION;
+	}
+
+
+	books[bookIndex].loaned_to_patron_id = patronid; //set loaned id
+	books[bookIndex].state = OUT; //set checked out
+
+	pats[patIndex].number_books_checked_out++;
+
+	saveBooks(books, BOOKFILE.c_str()); //save to disk
 	savePatrons(pats, PATRONFILE.c_str());
 
 
@@ -95,7 +106,32 @@ int checkout(int bookid, int patronid){
  */
 int checkin(int bookid){
 
+	reloadAllData();
 
+	int index = -5;
+	for (int i = 0; i < int(books.size()); i++){
+		if (books[i].book_id == bookid){;
+			index = i;
+			break;
+		}
+	}
+
+	if (index == -5){
+		return BOOK_NOT_IN_COLLECTION;
+	}
+
+	for (int i = 0; i < int(pats.size()); i++){
+		if (books[index].loaned_to_patron_id == pats[i].patron_id){
+			pats[i].number_books_checked_out--;
+			break;
+		}
+	}
+
+	books[index].loaned_to_patron_id = NO_ONE;
+	books[index].state = IN;
+
+	saveBooks(books, BOOKFILE.c_str());
+	savePatrons(pats, PATRONFILE.c_str());
 
 	return SUCCESS;
 }
@@ -111,21 +147,17 @@ int checkin(int bookid){
  */
 int enroll(std::string &name){
 
-	loadBooks(books, BOOKFILE.c_str());
-	loadPatrons(pats, PATRONFILE.c_str());
+	reloadAllData();
 
-	int newPatId = pats.size();
 	patron newPat;
 	newPat.name = name;
 	newPat.number_books_checked_out = NONE;
-	newPat.patron_id = newPatId;
+	newPat.patron_id = pats.size();
 	pats.push_back(newPat);
 
-	saveBooks(books, BOOKFILE.c_str());
 	savePatrons(pats, PATRONFILE.c_str());
 
-
-	return newPatId;
+	return newPat.patron_id;
 }
 
 /*
@@ -134,6 +166,7 @@ int enroll(std::string &name){
  * 
  */
 int numbBooks(){
+	reloadAllData();
 	return books.size();;
 }
 
@@ -142,6 +175,7 @@ int numbBooks(){
  * (ie. if 3 patrons returns 3)
  */
 int numbPatrons(){
+	reloadAllData();
 	return pats.size();
 }
 
@@ -152,20 +186,21 @@ int numbPatrons(){
  */
 int howmanybooksdoesPatronHaveCheckedOut(int patronid){
 
-	int booksOut;
-	bool validPat = false;
-		for (int i = 0; i < int(pats.size()) && !validPat; i++){
-			if (pats[i].patron_id == patronid){
-				validPat = true;
-				booksOut = pats[i].number_books_checked_out;
-			}
+	int booksOut = -5;
+	for (int i = 0; i < int(pats.size()); i++){
+		if (pats[i].patron_id == patronid){
+			booksOut = pats[i].number_books_checked_out;
+			return booksOut;
 		}
+	}
 
-	if (!validPat){
+	if (booksOut == -5){
 		return PATRON_NOT_ENROLLED;
 	}
 
 	return booksOut;
+
+
 }
 
 /* search through patrons container to see if patronid is there
@@ -176,9 +211,10 @@ int howmanybooksdoesPatronHaveCheckedOut(int patronid){
  */
 int whatIsPatronName(std::string &name,int patronid){
 
-	bool validPat = false;
-		for (int i = 0; i < int(pats.size()) && !validPat; i++){
-			if (pats[i].patron_id == patronid && pats[i].name == name){
+	reloadAllData();
+
+	for (int i = 0; i < int(pats.size()); i++){
+			if (pats[i].patron_id == patronid){
 				return SUCCESS;
 			}
 		}

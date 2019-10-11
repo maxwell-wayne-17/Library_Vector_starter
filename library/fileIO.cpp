@@ -28,48 +28,40 @@ int loadBooks(std::vector<book> &books, const char* filename)
 	string line = "";
 	while(getline(inputFile, line)){
 		book newBook;
-		int converter = 0;
 
 		vector<string> data;
 		boost::split(data, line,[](char c){return c == ',';});
 
-		stringstream sBookId(data[0]);
-		sBookId >> converter;
-		newBook.book_id = converter;
+		newBook.book_id = stoi(data[0]);
 
 		newBook.title = data[1];
 		newBook.author = data[2];
 
-		stringstream sState(data[3]);
-		sState >> converter;
-		newBook.state = static_cast<book_checkout_state>(converter);
+		newBook.state = static_cast<book_checkout_state>(stoi(data[3]));
 
-		stringstream sPatId(data[4]);
-		sPatId >> converter;
-		newBook.loaned_to_patron_id = converter;
+		newBook.loaned_to_patron_id = stoi(data[4]);
+		books.push_back(newBook);
 
 
 		/*string bookId, title, author, state, patId;
 		stringstream ss(line);
 		getline(ss, bookId, SEPARATOR);
-		ss >> converter;
-		newBook.book_id = converter;
+		newBook.book_id = stoi(bookId);
 
-		getline(ss, newBook.title, SEPARATOR);
+		getline(ss, title, SEPARATOR);
 		newBook.title = title;
 
 		getline(ss, author, SEPARATOR);
 		newBook.author = author;
 
 		getline(ss, state, SEPARATOR);
-		ss >> converter;
-		newBook.state = static_cast<book_checkout_state>(converter);
+		newBook.state = static_cast<book_checkout_state>(stoi(state));
 
 		getline(ss, patId, SEPARATOR);
-		ss >> converter;
-		newBook.loaned_to_patron_id = converter; */
+		newBook.loaned_to_patron_id = stoi(patId);
 
 		books.push_back(newBook);
+		ss.clear();*/
 
 	}
 
@@ -92,17 +84,17 @@ int saveBooks(std::vector<book> &books, const char* filename) // added code but 
 		return NO_BOOKS_IN_LIBRARY;
 	}
 
-	ofstream outputFile;
-	outputFile.open(filename);
+	fstream outputFile;
+	outputFile.open(filename, ios_base::out);
 
 	if (!outputFile.is_open()){
 		return COULD_NOT_OPEN_FILE;
 	}
 
 	for (int i = 0; i < int(books.size()); i++){
-		outputFile << books[i].book_id << " , " << books[i].title << " , "
-				<< books[i].author << " , " << books[i].state
-				<< " , " << books[i].loaned_to_patron_id;// << "\n";
+		outputFile << to_string(books[i].book_id) << "," << books[i].title << ","
+				<< books[i].author << "," << to_string(books[i].state)
+				<< "," << books[i].loaned_to_patron_id << endl;
 	}
 
 	outputFile.close();
@@ -127,22 +119,32 @@ int loadPatrons(std::vector<patron> &patrons, const char* filename)
 	string line = "";
 	while(getline(inputFile, line)){
 		patron newPat;
-		int converter = 0;
 
 		vector<string> data;
 		boost::split(data, line,[](char c){return c == ',';});
 
-		stringstream sPatId(data[0]);
-		sPatId >> converter;
-		newPat.patron_id = converter;
+		newPat.patron_id = stoi(data[0]);
 
 		newPat.name = data[1];
 
-		stringstream sNumBooks(data[2]);
-		sNumBooks >> converter;
-		newPat.number_books_checked_out = converter;
+		newPat.number_books_checked_out = stoi(data[2]);
 
 		patrons.push_back(newPat);
+
+		/*string patId, name, booksOut;
+		stringstream ss(line);
+
+		getline(ss, patId, SEPARATOR);
+		newPat.patron_id = stoi(patId);
+
+		getline(ss, name, SEPARATOR);
+		newPat.name = name;
+
+		getline(ss, booksOut, SEPARATOR);
+		newPat.number_books_checked_out = stoi(booksOut);
+
+		patrons.push_back(newPat);
+		ss.clear(); */
 
 	}
 
@@ -173,8 +175,8 @@ int savePatrons(std::vector<patron> &patrons, const char* filename)
 		}
 
 		for (int i = 0; i < int(patrons.size()); i++){
-			outputFile << patrons[i].patron_id << " , " << patrons[i].name << " , "
-					<< patrons[i].number_books_checked_out;// << "\n";
+			outputFile << to_string(patrons[i].patron_id) << "," << patrons[i].name << ","
+					<< to_string(patrons[i].number_books_checked_out) << endl;
 		}
 
 		outputFile.close();
